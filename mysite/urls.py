@@ -18,6 +18,7 @@ from django.urls import include, path
 
 
 urlpatterns = [
+    path(r'', admin.site.urls),
     path('inv_check/', include('inv_check.urls')),
     path('admin/', admin.site.urls),
 ]
