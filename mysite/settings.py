@@ -26,7 +26,7 @@ SECRET_KEY = 'sp^lks%7rn&6*&9b8zlj!yl69l7@mgzd-bznv!w7d3#7xde&w8'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
+## deployment line:
 ALLOWED_HOSTS = ['127.0.0.1', 'sccycling-merch.herokuapp.com']
 
 
@@ -44,6 +44,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', ## deployment line
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -97,6 +98,8 @@ DATABASES = {
     }
 }
 
+#db_from_env = dj_database_url.config(conn_max_age=500)
+#DATABASES['default'].update(db_from_env)
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -122,7 +125,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Etc/GMT-8'
+TIME_ZONE = 'Etc/GMT+8'
 
 USE_I18N = True
 
@@ -134,4 +137,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
+# The absolute path to the directory where collectstatic will collect static files for deployment.
+## deployment line:
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+## # deployment line:
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATIC_URL = '/static/'
