@@ -1,0 +1,27 @@
+{% extends 'inv_check/base.html' %}
+
+{% block content %}
+    <form action = "" method = "get"> 
+    <label for="item-name">Item name: </label> 
+    <input id="item-name" type="text" name="item-name"> 
+    <input type="submit" value="Submit"> 
+    </form> 
+
+    <h2> Item Details </h2>
+    <table width="80%" border="1" class='data.frame'>
+        <thead>
+        <tr style="text-align: right;">
+        {% for header in fields.headers %}
+            <th><center>{{ header }}</center></th>
+        {% endfor %}
+        </thead>
+        <tbody>
+        <tr> 
+        {% for value in fields.rows %}
+                <td>{{ value }}</td>
+        {% endfor %}
+        </tr> 
+        </tbody>
+    </table>
+
+{% endblock %}

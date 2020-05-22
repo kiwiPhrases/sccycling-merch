@@ -1,0 +1,21 @@
+{% extends 'inv_check/base.html' %}
+
+{% block content %}
+    <h2> Item Details </h2>
+    <table width="80%" border="1" class='data.frame'>
+        <thead>
+        <tr style="text-align: right;">
+        {% for header in fields.headers %}
+            <th><center>{{ header }}</center></th>
+        {% endfor %}
+        </thead>
+        <tbody>
+        <tr> 
+        {% for value in fields.rows %}
+                <td>{{ value }}</td>
+        {% endfor %}
+        </tr> 
+        </tbody>
+    </table>
+
+{% endblock %}

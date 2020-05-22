@@ -1,0 +1,32 @@
+{% extends "inv_check/base.html" %}
+{% load static %}
+
+
+{% block content %}
+    <h2>Make an order</h2>
+    <p>For questions regarding items, please contact us via our <a href="sccycling@gmail.com">email</a>. Orders are subject to review and we will contact you for details to complete the order. Thank you for supporting the club and Fight on!</p>
+        <table>
+        <form method="post" action=".">
+            {% csrf_token %}
+            {{ form.as_table }}
+            <input type="submit" value="Submit" />
+        </form>
+        </table>
+        
+    <h2> Order Details </h2>
+    <table width="80%" border="1" class='data.frame'>
+        <thead>
+        <tr style="text-align: right;">
+        {% for header in fields.headers %}
+            <th><center>{{ header }}</center></th>
+        {% endfor %}
+        </thead>
+        <tbody>
+        <tr> 
+        {% for value in fields.rows %}
+                <td>{{ value }}</td>
+        {% endfor %}
+        </tr> 
+        </tbody>
+    </table>
+{% endblock %}

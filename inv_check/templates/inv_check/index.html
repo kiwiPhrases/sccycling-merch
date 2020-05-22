@@ -1,0 +1,33 @@
+{% extends "inv_check/base.html" %}
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'inv_check/style.css' %}">
+
+{% block content %}
+  <h1>USC Cycling Inventory</h1>
+  <p> Wecome to SC Cycling's inventory page. Here you'll find our latest gear avaibility and pricing. For questions, contact us at <a href="sccycling@gmail.com">sccycling@gmail.com</a>. 
+  
+  <h3> Instructions </h3>
+  <p>Use the links on left to perform desired actions on our inventory. Eventually, everything that changes things in the inventory or shows team price will be password protected. We can potentially make the search stuff publicly accessible so interested peeps can search for items. We can add pictures and the like later.  </p>
+  <div>
+  <h3>Latest Items</h3>
+  <p> Listed below is our latest merch and its availability </p>
+    <table width="70%" border="1">
+        <thead>
+        <tr style="text-align: right;">
+        {% for header in fields.headers %}
+            <th><center>{{ header }}</center></th>
+        {% endfor %}
+        </thead>
+        <tbody>
+        {% for valueList in fields.rows %}
+            <tr>    
+            {% for value in valueList %}
+                <td>{{ value }}</td>
+            {% endfor %}
+            </tr>    
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "inv_check/base.html" %}
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'inv_check/style.css' %}">
+
+{% block content %}
+  <h1>Outstanding Orders</h1>
+  <p> These are orders that have been placed but not yet marked completed. If completed(or addressed), please mark it complete.</p> 
+  
+    <div class="row">
+        <div class="col-md-8">
+            <h3>Select order id:</h3>
+            <p>Selecting an order will mark it as complete</p>
+            <form id="select-order" method="get" action="">
+                <select name="item-order" class="chosen-select">
+                    {% for order in orders %}
+                        <option value="{{ order.id }}"> {{ order.id }} </option>
+                    {% endfor %}
+                </select><br/>
+                <label for="submit"></label><button id="submit" type="submit" class="btn btn-default">Submit</button>
+            </form>
+        </div>
+    </div>
+  
+  <div>
+  <h3>Order Details</h3>
+    <table width="70%" border="1">
+        <thead>
+        <tr style="text-align: right;">
+        {% for header in fields.headers %}
+            <th><center>{{ header }}</center></th>
+        {% endfor %}
+        </thead>
+        <tbody>
+        {% for valueList in fields.rows %}
+            <tr>    
+            {% for value in valueList %}
+                <td>{{ value }}</td>
+            {% endfor %}
+            </tr>    
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+{% endblock %}
