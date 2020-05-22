@@ -8,7 +8,10 @@
 			padding-top:20px;
             font-weight: bold;
 		}
- 
+
+.title title{
+    text-align: center;
+}        
 .sidenav a {
 			padding:6px 8px 6px 16px;
 			text-decoration: none;
