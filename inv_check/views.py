@@ -188,7 +188,7 @@ def addNewItem(request):
         context['fields'] = fields       
         return render(request, 'inv_check/newItem.html', context)
 
-   return render(request, 'inv_check/newItem.html', context)
+   return render(request, 'inv_check/newitem.html', context)
    
 ## each item has a URL, this directs the user there        
 def showInventory(request, item_id):
