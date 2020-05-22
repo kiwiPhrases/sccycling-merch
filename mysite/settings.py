@@ -27,7 +27,7 @@ SECRET_KEY = 'sp^lks%7rn&6*&9b8zlj!yl69l7@mgzd-bznv!w7d3#7xde&w8'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 ## deployment line:
-ALLOWED_HOSTS = ['127.0.0.1', 'sccycling-merch.herokuapp.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'sccycling-merch.herokuapp.com','fathomless-forest-26289.herokuapp.com/']
 
 
 # Application definition
