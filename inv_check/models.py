@@ -1,6 +1,7 @@
 from django.db import models
 import re
 import datetime
+from django.contrib.auth.models import User
 # Create your models here.
 #Item	Description	Price	count	XXS	XS	S	M	L	XL	XXL	XXXL 
 

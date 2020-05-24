@@ -5,9 +5,29 @@ from django.template import loader
 from django.shortcuts import render, redirect
 from inv_check.models import Item, Coming, Sale, Order
 from django.db.models import Max
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 
 from .forms import NameForm,ItemSaleForm, addItemForm, orderForm #, ItemSelectForm
 
+## -------------------------- user authentication -------------------------- 
+def loguserin(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+        login(request, user)
+        # Redirect to a success page.
+        ...
+    else:
+        # Return an 'invalid login' error message.
+        ...
+
+def logout_view(request):
+    logout(request)
+    # Redirect to a success page.  
+
+## -------------------------- home-page functions --------------------------     
 def index(request):
    #return HttpResponse("<h1><strong><center>SC Cycling Inventory</center></strong></h1>")
    latestYear = Item.objects.aggregate(Max('year'))['year__max']
@@ -32,11 +52,11 @@ def index(request):
    context = {'fields':datDict}     
    return render(request, 'inv_check/index.html', context)
 
+## --------------------------  HELPER FUNCTIONS -------------------------- 
 class itemsListView(ListView):
     model = Item
     context_object_name = 'item'
 
-## fetch item details using item id    
 def fetchItemDetails(item_id, fields2exclude = ['coming', 'sale', 'id','order']):    
     countFields = [ 'xxs','xs','s','m','l','xl','xxl','xxxl','count']
     item = Item.objects.get(pk = item_id)
@@ -65,8 +85,56 @@ def fetchOrderDetails(item_id, fields2exclude = ['coming', 'sale', 'id','order']
             val = getattr(item, field)
             datDict[field.title()] = val
     return(datDict)    
+
+### -------------------------- PUBLIC FUNCTIONS --------------------------     
+def findBySelectionPublic(request):
+    items = Item.objects.all()
+    # only show items for sale
+    itemChoices = Item.objects.filter(forSale=True) 
     
-## these views return search results in same window:
+    # create initial context
+    context = {'itemChoices':itemChoices, 'fields':{'headers':[], 'rows':[]}}
+    
+    # show request on the website
+    if request.method == 'GET':
+        # create a form instance and populate it with data from the request:
+        itemName = request.GET.get('item-choice')
+        print(itemName)
+        if itemName:
+            itemsFound = Item.objects.filter(item__icontains=itemName)
+            itemID = itemsFound[0].id
+            datDict = fetchItemDetails(itemID,['coming', 'sale','order','id','forSale','team_price'])
+            keys = datDict.keys()      
+            # unpack them into another dictionary for printing table
+            fields = {
+                'headers': list(keys),
+                'rows':[datDict[key] for key in keys]}
+            context['fields'] = fields
+            return render(request, 'inv_check/itemchoicesshow.html', context)      
+
+    return render(request, 'inv_check/itemchoicesshow.html', context) 
+def makeOrder(request):
+    context = {'form':orderForm(),'fields':{'headers':[], 'rows':[]}} 
+    if request.method == 'POST':
+        form = orderForm(request.POST)
+        if form.is_valid():
+            item = form.save(commit=True)
+            item.save()
+            itemID = item.id
+            datDict = fetchOrderDetails(itemID,fields2exclude = ['coming', 'sale', 'id','order','date','completed'])
+            keys = datDict.keys()      
+            # unpack them into another dictionary for printing table
+            fields = {
+                'headers': list(keys),
+                'rows':[datDict[key] for key in keys]}
+            context['fields'] = fields       
+            return render(request, 'inv_check/makeorder.html', context)
+
+    return render(request, 'inv_check/makeorder.html', context)    
+    
+    
+### -------------------------- EBOARD FUNCTIONS: -------------------------- 
+@login_required
 def findbyname(request):
     # if this is a POST request we need to process the form data
     if request.method == 'GET':
@@ -93,6 +161,7 @@ def findbyname(request):
     return render(request, 'inv_check/detailshow.html', context)      
 
 ## Select item functions 
+@login_required
 def findBySelection(request):
     items = Item.objects.all()
     # show all items
@@ -120,33 +189,9 @@ def findBySelection(request):
 
     return render(request, 'inv_check/itemchoicesshow.html', context)   
 
-def findBySelectionPublic(request):
-    items = Item.objects.all()
-    # only show items for sale
-    itemChoices = Item.objects.filter(forSale=True) 
-    
-    # create initial context
-    context = {'itemChoices':itemChoices, 'fields':{'headers':[], 'rows':[]}}
-    
-    # show request on the website
-    if request.method == 'GET':
-        # create a form instance and populate it with data from the request:
-        itemName = request.GET.get('item-choice')
-        print(itemName)
-        if itemName:
-            itemsFound = Item.objects.filter(item__icontains=itemName)
-            itemID = itemsFound[0].id
-            datDict = fetchItemDetails(itemID,['coming', 'sale','order','id','forSale','team_price'])
-            keys = datDict.keys()      
-            # unpack them into another dictionary for printing table
-            fields = {
-                'headers': list(keys),
-                'rows':[datDict[key] for key in keys]}
-            context['fields'] = fields
-            return render(request, 'inv_check/itemchoicesshow.html', context)      
 
-    return render(request, 'inv_check/itemchoicesshow.html', context) 
     
+@login_required    
 def recordSale(request):
    context = {'form':ItemSaleForm(),'fields':{'headers':[], 'rows':[]}}
    if request.method == 'POST':
@@ -170,7 +215,8 @@ def recordSale(request):
         context['fields'] = {'headers':['size','old quantity', 'new quantity'],'rows':[sale.item.item,n,m]}
         return render(request, 'inv_check/sale.html', context)     
    return render(request, 'inv_check/sale.html', context)    
- 
+
+@login_required 
 def addNewItem(request):
    context = {'form':addItemForm(),'fields':{'headers':[], 'rows':[]}}
    if request.method == 'POST':
@@ -190,7 +236,7 @@ def addNewItem(request):
 
    return render(request, 'inv_check/newitem.html', context)
    
-## each item has a URL, this directs the user there        
+@login_required        
 def showInventory(request, item_id):
     try:
         datDict = fetchItemDetails(item_id)           
@@ -206,25 +252,8 @@ def showInventory(request, item_id):
         
     return render(request, 'inv_check/detail.html', context)
     
-def makeOrder(request):
-    context = {'form':orderForm(),'fields':{'headers':[], 'rows':[]}} 
-    if request.method == 'POST':
-        form = orderForm(request.POST)
-        if form.is_valid():
-            item = form.save(commit=True)
-            item.save()
-            itemID = item.id
-            datDict = fetchOrderDetails(itemID,fields2exclude = ['coming', 'sale', 'id','order','date','completed'])
-            keys = datDict.keys()      
-            # unpack them into another dictionary for printing table
-            fields = {
-                'headers': list(keys),
-                'rows':[datDict[key] for key in keys]}
-            context['fields'] = fields       
-            return render(request, 'inv_check/makeorder.html', context)
 
-    return render(request, 'inv_check/makeorder.html', context)
-
+@login_required(login_url='/accounts/login/')    
 def showOrders(request):
     context = {'fields':{'headers':[], 'rows':[]}} 
     orders = Order.objects.filter(completed=False)

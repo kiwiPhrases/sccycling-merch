@@ -1,10 +1,11 @@
-from django.urls import path
-
+from django.urls import path, include
+from django.contrib.auth import views as auth_views
 from . import views
 
 #app_name = 'inventoryCheck'
 
 urlpatterns = [
+    path('accounts/', include('django.contrib.auth.urls')),
     path(r'', views.index, name='index'),
     #path('<int:item_id>/', views.showInventory, name='details'),
     path(r'search-item/', views.findBySelectionPublic, name='item-select-public'),

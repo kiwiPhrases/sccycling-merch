@@ -35,6 +35,12 @@
                 </ul>
                 <h4>eBoard menu</h4>
                 <ul>
+                  {% if user.is_authenticated %}
+                  <li>User: {{ user.get_username }}</li>
+                  <li><a href="{% url 'logout'%}?next={{request.path}}">Logout</a></li>   
+                  {% else %}
+                  <li><a href="{% url 'login'%}?next={{request.path}}">Login</a></li>   
+                  {% endif %} 
                   <li><a href="{% url 'item-search' %}">Search for item</a></li>
                   <li><a href="{% url 'item-selection' %}">Select an item</a></li>
                   <li><a href="{% url 'show-orders' %}">Show orders</a></li>
