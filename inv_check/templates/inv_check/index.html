@@ -5,13 +5,11 @@
 
 {% block content %}
   
-  <p> Wecome to SC Cycling's inventory page. Here you'll find our latest gear avaibility and pricing. For questions, contact us at <a href="sccycling@gmail.com">sccycling@gmail.com</a>. 
-  
-  <h3> Instructions </h3>
-  <p>Use the links on left to perform desired actions on our inventory. Eventually, everything that changes things in the inventory or shows team price will be password protected. We can potentially make the search stuff publicly accessible so interested peeps can search for items. We can add pictures and the like later.  </p>
+  <p> Wecome to SC Cycling's inventory page. Here you'll find our latest gear avaibility, pricing, and pictures. For questions, contact us at <a href="sccycling@gmail.com">sccycling@gmail.com</a>. 
+
   <div>
   <h3>Latest Items</h3>
-  <p> Listed below is our latest merch and its availability </p>
+  <p> Listed below is our latest merch and its availability. To order, please fill out the <a href="{% url 'order-form' %}">Order Form</a>.</p>
     <table width="70%" border="1">
         <thead>
         <tr style="text-align: right;">
@@ -30,4 +28,6 @@
         </tbody>
     </table>
     </div>
+    
+    <p> For other merch items available for purchase, check <a href="{% url 'item-select-public' %}">here</a>.</p>
 {% endblock %}
