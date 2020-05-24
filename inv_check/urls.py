@@ -8,7 +8,7 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path(r'', views.index, name='index'),
     #path('<int:item_id>/', views.showInventory, name='details'),
-    path(r'search-item/', views.findBySelectionPublic, name='item-select-public'),
+    path(r'select-item-public/', views.findBySelectionPublic, name='item-select-public'),
     path(r'order-form/', views.makeOrder, name='order-form'),
     path(r'search-item/', views.findbyname, name='item-search'),
     path(r'select-item/', views.findBySelection, name='item-selection'),
