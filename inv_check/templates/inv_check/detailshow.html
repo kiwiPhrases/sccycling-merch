@@ -1,13 +1,19 @@
 {% extends 'inv_check/base.html' %}
 
 {% block content %}
+    <h2> Item Details </h2>
+    <p>To see available sizes, prices, and pictures, search for item below. Be specific with the item name (ie 2019 jersey M).</p>
+    
+    
     <form action = "" method = "get"> 
     <label for="item-name">Item name: </label> 
     <input id="item-name" type="text" name="item-name"> 
     <input type="submit" value="Submit"> 
     </form> 
 
-    <h2> Item Details </h2>
+    <div><center>
+        <img src="{{ img_url }}" alt="merch image" border=3 height=300 width=300></img>
+    </center></div>    
     <table width="80%" border="1" class='data.frame'>
         <thead>
         <tr style="text-align: right;">

@@ -29,7 +29,8 @@ class Item(models.Model):
     gender = models.CharField(max_length = 1, choices = Gender.choices, default =Gender.Unisex)
     itemTypes = [(s,s) for s in ['hoodie','tshirt','jersey','bibs','vest','armwarmers','jacket','cap',  'gloves','water bottle','pedals','wheels','bag','bike','bags','miscellaneous']]
     itemtype = models.CharField(max_length=13, choices = itemTypes) 
-    
+    imgurl_1 = models.URLField('Image of item',default = 'https://drive.google.com/uc?id=1WZFyFdPikqZtkAI1KtvgmMJzJBzNHT8U')
+
     def current_year():
         return datetime.date.today().year
         

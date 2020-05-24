@@ -5,8 +5,8 @@
 <div class="container">
     <div class="row">
         <div class="col-md-6">
-            <h3>Select a merch item:</h3>
-            <p>To see available sizes, prices, and pictures, select an item below</p>
+            <h2>Merch Details</h2>
+            <p>To see available sizes, prices, and pictures, select an item below:</p>
             <form id="select-item" role="search" method="get" action="">
                 <select name="item-choice" data-placeholder="Select item" class="chosen-select" >
                     {% for item in itemChoices %}
@@ -17,7 +17,9 @@
             </form>
         </div>
     </div>
-    <h2> Item Details </h2>
+    <div><center>
+        <img src="{{ img_url }}" alt="merch image" border=3 height=300 width=300></img>
+    </center></div>    
     <table width="80%" border="1" class='data.frame'>
         <thead>
         <tr style="text-align: right;">
@@ -33,6 +35,7 @@
         </tr> 
         </tbody>
     </table>
+
 </div>
 
 

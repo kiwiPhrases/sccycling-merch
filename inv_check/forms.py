@@ -13,7 +13,7 @@ class ItemSaleForm(forms.ModelForm):
 class addItemForm(forms.ModelForm):
     class Meta:
         model = Item
-        fields = ('item','description','retail_price','team_price','xxs','xs','s','m','l','xl','xxl','xxxl','count','gender','itemtype','year')
+        fields = ('item','description','retail_price','team_price','xxs','xs','s','m','l','xl','xxl','xxxl','count','gender','itemtype','year','imgurl_1')
         
         
 class orderForm(forms.ModelForm):

@@ -8,24 +8,7 @@ from django.db.models import Max
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
-from .forms import NameForm,ItemSaleForm, addItemForm, orderForm #, ItemSelectForm
-
-## -------------------------- user authentication -------------------------- 
-def loguserin(request):
-    username = request.POST['username']
-    password = request.POST['password']
-    user = authenticate(request, username=username, password=password)
-    if user is not None:
-        login(request, user)
-        # Redirect to a success page.
-        ...
-    else:
-        # Return an 'invalid login' error message.
-        ...
-
-def logout_view(request):
-    logout(request)
-    # Redirect to a success page.  
+from .forms import NameForm,ItemSaleForm, addItemForm, orderForm #, ItemSelectForm 
 
 ## -------------------------- home-page functions --------------------------     
 def index(request):
@@ -57,7 +40,7 @@ class itemsListView(ListView):
     model = Item
     context_object_name = 'item'
 
-def fetchItemDetails(item_id, fields2exclude = ['coming', 'sale', 'id','order']):    
+def fetchItemDetails(item_id, fields2exclude = ['coming', 'sale', 'id','order','imgurl_1']):    
     countFields = [ 'xxs','xs','s','m','l','xl','xxl','xxxl','count']
     item = Item.objects.get(pk = item_id)
     
@@ -74,7 +57,7 @@ def fetchItemDetails(item_id, fields2exclude = ['coming', 'sale', 'id','order'])
                 datDict[field.title()] = val
     return(datDict)
     
-def fetchOrderDetails(item_id, fields2exclude = ['coming', 'sale', 'id','order']):    
+def fetchOrderDetails(item_id, fields2exclude = ['coming', 'sale', 'id','order','imgurl_1']):    
     countFields = [ 'xxs','xs','s','m','l','xl','xxl','xxxl','count']
     item = Order.objects.get(pk = item_id)
     
@@ -93,26 +76,33 @@ def findBySelectionPublic(request):
     itemChoices = Item.objects.filter(forSale=True) 
     
     # create initial context
-    context = {'itemChoices':itemChoices, 'fields':{'headers':[], 'rows':[]}}
+    defaultImageUrl = 'https://drive.google.com/uc?id=1WZFyFdPikqZtkAI1KtvgmMJzJBzNHT8U'
+    context = {'itemChoices':itemChoices, 'fields':{'headers':[], 'rows':[]}, 'img_url':defaultImageUrl}
     
     # show request on the website
     if request.method == 'GET':
         # create a form instance and populate it with data from the request:
         itemName = request.GET.get('item-choice')
-        print(itemName)
+        #print(itemName)
         if itemName:
+            # fetch the item from the database
             itemsFound = Item.objects.filter(item__icontains=itemName)
             itemID = itemsFound[0].id
-            datDict = fetchItemDetails(itemID,['coming', 'sale','order','id','forSale','team_price'])
+            datDict = fetchItemDetails(itemID,['coming', 'sale','order','id','forSale','team_price','imgurl_1'])
             keys = datDict.keys()      
             # unpack them into another dictionary for printing table
             fields = {
                 'headers': list(keys),
                 'rows':[datDict[key] for key in keys]}
+                
+            # update output dictionary values based on query results    
             context['fields'] = fields
+            context['img_url'] = itemsFound[0].imgurl_1
+            print(context['img_url'])
             return render(request, 'inv_check/itemchoicesshow.html', context)      
 
     return render(request, 'inv_check/itemchoicesshow.html', context) 
+    
 def makeOrder(request):
     context = {'form':orderForm(),'fields':{'headers':[], 'rows':[]}} 
     if request.method == 'POST':
@@ -136,6 +126,11 @@ def makeOrder(request):
 ### -------------------------- EBOARD FUNCTIONS: -------------------------- 
 @login_required
 def findbyname(request):
+    defaultImageUrl = 'https://drive.google.com/uc?id=1WZFyFdPikqZtkAI1KtvgmMJzJBzNHT8U'
+    fields = {'headers':[], 'rows':[]}
+    context = {'fields':fields, 'img_url':defaultImageUrl}
+    
+    
     # if this is a POST request we need to process the form data
     if request.method == 'GET':
         # create a form instance and populate it with data from the request:
@@ -152,12 +147,12 @@ def findbyname(request):
                     'headers': list(keys),
                     'rows':[datDict[key] for key in keys]}
                 context = {'fields':fields}
+                context['img_url'] = itemsFound[0].imgurl_1
                 return render(request, 'inv_check/detailshow.html', context)    
             except IndexError:
                 raise Http404("Item does not exist")
-                
-    fields = {'headers':[], 'rows':[]}
-    context = {'fields':fields}
+                defaultImageUrl = 'https://drive.google.com/uc?id=1WZFyFdPikqZtkAI1KtvgmMJzJBzNHT8U'
+
     return render(request, 'inv_check/detailshow.html', context)      
 
 ## Select item functions 
@@ -168,7 +163,8 @@ def findBySelection(request):
     itemChoices = Item.objects.all() 
     
     # create initial context
-    context = {'itemChoices':itemChoices, 'fields':{'headers':[], 'rows':[]}}
+    defaultImageUrl = 'https://drive.google.com/uc?id=1WZFyFdPikqZtkAI1KtvgmMJzJBzNHT8U'
+    context = {'itemChoices':itemChoices, 'fields':{'headers':[], 'rows':[]}, 'img_url':defaultImageUrl}
     
     # show request on the website
     if request.method == 'GET':
@@ -185,6 +181,7 @@ def findBySelection(request):
                 'headers': list(keys),
                 'rows':[datDict[key] for key in keys]}
             context['fields'] = fields
+            context['img_url'] = itemsFound[0].imgurl_1
             return render(request, 'inv_check/itemchoicesshow.html', context)      
 
     return render(request, 'inv_check/itemchoicesshow.html', context)   
