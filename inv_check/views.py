@@ -3,7 +3,7 @@ from django import forms
 from django.views.generic import ListView, CreateView, UpdateView
 from django.template import loader 
 from django.shortcuts import render, redirect
-from inv_check.models import Item, Coming, Sale, Order
+from inv_check.models import Item, Coming, Sale, Order, FrontPics
 from django.db.models import Max
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -16,23 +16,25 @@ def index(request):
    latestYear = Item.objects.aggregate(Max('year'))['year__max']
    
    # fetch the latest items that are for sale
-   latestItems = Item.objects.filter(year=latestYear) | Item.objects.filter(forSale=True)
-   
+   latestItems = Item.objects.filter(year=latestYear) & Item.objects.filter(forSale=True)
+   latestItems = latestItems.order_by('-retail_price').order_by('-gender')
    # create dictionary of fields and values to print
    datDict = {}
    datDict['headers'] =  ['item','gender','available sizes','price']
    datDict['rows'] = []
    countFields = [ 'xxs','xs','s','m','l','xl','xxl','xxxl','count']
+
    for item in latestItems:
        itemName =  item.item
        sizeList = []
        for size in countFields:
-            if getattr(latestItems[0],size)>0:
+            if getattr(item,size)>0:
                 sizeList.append(size)
        datDict['rows'].append([itemName.title(),item.gender,",".join(sizeList).upper(),item.retail_price])
-
+        
    # create context
-   context = {'fields':datDict}     
+   picList = [i for i in FrontPics.objects.all()][:3]
+   context = {'fields':datDict, 'frontImages':picList}     
    return render(request, 'inv_check/index.html', context)
 
 ## --------------------------  HELPER FUNCTIONS -------------------------- 

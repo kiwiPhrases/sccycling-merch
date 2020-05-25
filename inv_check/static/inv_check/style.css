@@ -2,7 +2,6 @@
 			height:100%;
             width: 20%;
             top:0;
-			left:0;
 			position: fixed;
 			background-color:#FFCC00;
 			padding-top:20px;
@@ -35,7 +34,7 @@ th, td {
   border-bottom: 1px solid #ddd;
   border-color: #EAEAEA
 }        
-tr:hover {background-color: #f5f5f5;}
+tr:hover {background-color: #FFCC00;}
 tr:nth-child(even) {background-color: #f2f2f2;}
 th {
   background-color: #990000;
@@ -44,6 +43,7 @@ th {
         
 .main {
   margin-left: 21%; /* Same as the width of the sidebar */
+  padding-left:10px;
   padding: 0px 10px;
 }        
 body {

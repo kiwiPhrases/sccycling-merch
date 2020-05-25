@@ -1,9 +1,10 @@
 from django.db import models
 import re
 import datetime
-from django.contrib.auth.models import User
-# Create your models here.
-#Item	Description	Price	count	XXS	XS	S	M	L	XL	XXL	XXXL 
+
+class FrontPics(models.Model):
+    picLabel = models.CharField('alternative label', max_length=15, default = 'front merch pic')
+    imgurl= models.URLField('image',default = 'https://drive.google.com/uc?id=1WZFyFdPikqZtkAI1KtvgmMJzJBzNHT8U')
 
 class Item(models.Model):
     #itemID = models.AutoField(primary_key = True)
@@ -27,7 +28,7 @@ class Item(models.Model):
         
     forSale = models.BooleanField('Is item for sale? ',default = True)    
     gender = models.CharField(max_length = 1, choices = Gender.choices, default =Gender.Unisex)
-    itemTypes = [(s,s) for s in ['hoodie','tshirt','jersey','bibs','vest','armwarmers','jacket','cap',  'gloves','water bottle','pedals','wheels','bag','bike','bags','miscellaneous']]
+    itemTypes = [(s,s) for s in ['hoodie','tshirt','jersey','bibs','vest','armwarmers','jacket','cap',  'gloves','water bottle','pedals','wheels','bags','bike','bags','miscellaneous', 'socks', 'wheels']]
     itemtype = models.CharField(max_length=13, choices = itemTypes) 
     imgurl_1 = models.URLField('Image of item',default = 'https://drive.google.com/uc?id=1WZFyFdPikqZtkAI1KtvgmMJzJBzNHT8U')
 

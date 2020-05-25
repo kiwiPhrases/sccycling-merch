@@ -5,8 +5,18 @@
 
 {% block content %}
   
-  <p> Wecome to SC Cycling's inventory page. Here you'll find our latest gear avaibility, pricing, and pictures. For questions, contact us at <a href="sccycling@gmail.com">sccycling@gmail.com</a>. 
+  <figure class="half" style="display:flex">
+      {% for img in frontImages %}
+          <div class="container">
+            <img src="{{img.imgurl}}" alt="{{img.picLabel}}" style="width:100%"/>
+          </div>
+       {% endfor %}
 
+   </figure>
+  
+  <p> Welcome to SC Cycling's inventory page. Here you'll find our latest gear avaibility, pricing, and pictures. For questions, contact us at <a href="sccycling@gmail.com">sccycling@gmail.com</a>. 
+
+  
   <div>
   <h3>Latest Items</h3>
   <p> Listed below is our latest merch and its availability. To order, please fill out the <a href="{% url 'order-form' %}">Order Form</a>.</p>
