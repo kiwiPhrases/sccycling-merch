@@ -111,7 +111,6 @@ def makeOrder(request):
         form = orderForm(request.POST)
         if form.is_valid():
             item = form.save(commit=True)
-            item.save()
             itemID = item.id
             datDict = fetchOrderDetails(itemID,fields2exclude = ['coming', 'sale', 'id','order','date','completed'])
             keys = datDict.keys()      
@@ -152,8 +151,8 @@ def findbyname(request):
                 context['img_url'] = itemsFound[0].imgurl_1
                 return render(request, 'inv_check/detailshow.html', context)    
             except IndexError:
-                raise Http404("Item does not exist")
-                defaultImageUrl = 'https://drive.google.com/uc?id=1WZFyFdPikqZtkAI1KtvgmMJzJBzNHT8U'
+                context['fields']['headers'] = ['item']
+                context['fields']['rows'] = ["Can't find item. Being more specific may help"]
 
     return render(request, 'inv_check/detailshow.html', context)      
 
@@ -277,6 +276,11 @@ def showOrders(request):
             for field in fields:
                 row.append(getattr(order,field))
             datDict['rows'].append(row)
-    for key in context['fields'].keys():        
-        context['fields'][key] = datDict[key]
+        for key in context['fields'].keys():        
+            context['fields'][key] = datDict[key]
+            
+    else:
+        context['fields']['headers'] = ['Orders']
+        context['fields']['rows']=[["Seems there are no outstanding orders"]]
+        
     return render(request, 'inv_check/showOrders.html', context)    

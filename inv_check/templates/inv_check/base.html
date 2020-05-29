@@ -6,7 +6,15 @@
     </style>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">-->
+  <!-- Materialize css -->
+  <!-- Compiled and minified CSS -->
+  <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">-->
+
+    <!-- Compiled and minified JavaScript -->
+   <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>-->
+            
+  
   <!-- Add additional CSS in static file -->
   {% load static %}
   <link rel="stylesheet" type="text/css" href="{% static 'inv_check/style.css' %}">
@@ -23,14 +31,14 @@
     <div class="sidenav">
      {% block sidebar %}
           
-              <nav id="sidebar">
+              <!--<div id="sidebar"-->
              <div id='sidebarimg'>
               <img src="{% static 'inv_check/images/SCcycling_logo.png' %}", alt='logo'>
               </div>
               <h4>Public menu</h4>
                 <ul >
                   <li><a href="{% url 'index' %}">Home</a></li>
-                  <li><a href="{% url 'item-select-public' %}">Find merch availability</a></li>
+                  <li><a href="{% url 'item-select-public' %}">Get merch availability</a></li>
                   <li><a href="{% url 'order-form' %}">Order form</a></li>
                 </ul>
                 <h4>eBoard menu</h4>
@@ -46,8 +54,9 @@
                   <li><a href="{% url 'show-orders' %}">Show orders</a></li>
                   <li><a href="{% url 'record-sale' %}">Record a sale</a></li>
                   <li><a href="{% url 'new-item' %}">Add new item</a></li>
+                  <li><a href="{% url 'admin:index' %}">Admin site</a></li>
                 </ul>
-                </nav>
+                <!--</div>-->
         
      {% endblock %}
      </div>
