@@ -4,15 +4,17 @@
 <link rel="stylesheet" type="text/css" href="{% static 'inv_check/style.css' %}">
 
 {% block content %}
-  
+  <center>
   <figure class="half" style="display:flex">
+    <center>
       {% for img in frontImages %}
-          <div class="container">
-            <img src="{{img.imgurl}}" alt="{{img.picLabel}}" style="width:100%"/>
-          </div>
+          <!--<div class="container", style="font-size:0px">-->
+            <img src="{{img.imgurl}}" alt="{{img.picLabel}}" style="width:20%"/>
+          <!--</div>-->
        {% endfor %}
-
+    </center>
    </figure>
+  
   
   <p> Welcome to SC Cycling's inventory page. Here you'll find our latest gear avaibility, pricing, and pictures. For questions, contact us at <a href="sccycling@gmail.com">sccycling@gmail.com</a>. 
 
@@ -40,4 +42,5 @@
     </div>
     
     <p> For other merch items available for purchase, check <a href="{% url 'item-select-public' %}">here</a>.</p>
+    </center>
 {% endblock %}
