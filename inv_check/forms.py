@@ -17,7 +17,16 @@ class addItemForm(forms.ModelForm):
         
         
 class orderForm(forms.ModelForm):
+    def __init__(self,*args,**kwargs):
+        super (orderForm,self ).__init__(*args,**kwargs)
+        self.fields['item'].queryset = Item.objects.filter(forSale=True)
+        
     class Meta:
         model = Order
         fields = ('item', 'size', 'quantity', 'recipient', 'name', 'address1', 'address2','city','state','zip','email','phone')
         
+        
+class itemFilterForm(forms.Form):
+        gender = forms.ChoiceField(choices=Item._meta.get_field('gender').choices)
+        size =  forms.ChoiceField(choices=Order._meta.get_field('size').choices[:-1])
+        itemtype = forms.ChoiceField(choices=Item._meta.get_field('itemtype').choices)

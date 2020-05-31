@@ -7,6 +7,17 @@
         <div class="col-md-6">
             <h2>Merch Details</h2>
             <p>To see available sizes, prices, and pictures, select an item below:</p>
+            <!--<h3>Optional Item Filters</h3>
+            <div class='container', style="display:flex">
+                
+                   {% for field in form  %}
+                        {{ field.errors }}
+                        <a> {{ field.label_tag }} {{ field }} </a> 
+                        <input type=submit>
+                     {% endfor %}
+            </div>
+            <div>-->
+            <h3> Select item: </h3>
             <form id="select-item" role="search" method="get" action="">
                 <select name="item-choice" data-placeholder="Select item" class="chosen-select" >
                     {% for item in itemChoices %}
@@ -15,10 +26,11 @@
                 </select><br/>
                 <label for="submit"></label><button id="submit" type="submit" class="btn btn-default">Submit</button>
             </form>
+            </div>
         </div>
     </div>
     <figure  class="half" style="display:flex">
-        <img src="{{ img_url }}" alt="merch image"  style="width:60%"></img>
+        <img src="{{ img_url }}" alt="merch image"  style="width:50%"></img>
     </figure>    
     <table width="80%" border="1" class='data.frame'>
         <thead>

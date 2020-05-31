@@ -8,7 +8,7 @@ from django.db.models import Max
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
-from .forms import NameForm,ItemSaleForm, addItemForm, orderForm #, ItemSelectForm 
+from .forms import NameForm,ItemSaleForm, addItemForm, orderForm, itemFilterForm #, ItemSelectForm 
 
 ## -------------------------- home-page functions --------------------------     
 def index(request):
@@ -80,7 +80,8 @@ def findBySelectionPublic(request):
     # create initial context
     defaultImageUrl = 'https://drive.google.com/uc?id=1WZFyFdPikqZtkAI1KtvgmMJzJBzNHT8U'
     context = {'itemChoices':itemChoices, 'fields':{'headers':[], 'rows':[]}, 'img_url':defaultImageUrl}
-    
+    #'form':itemFilterForm(),
+                    
     # show request on the website
     if request.method == 'GET':
         # create a form instance and populate it with data from the request:

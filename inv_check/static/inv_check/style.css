@@ -13,7 +13,12 @@ th {
   background-color: #990000;
   color: white;
 }        
-        
+ 
+ li {
+    list-style-type: none; 
+    display : inline;
+    }
+ 
 .main {
   margin-left: 0%; /* Same as the width of the sidebar */
   padding-left:0px;
@@ -25,7 +30,7 @@ body {
   padding: 0px;
 }
 
-h1, h2, h3 {
+h1, h2, h3 , h4 {
     color: #990000;
 }
 
