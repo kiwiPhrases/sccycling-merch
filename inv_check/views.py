@@ -75,7 +75,7 @@ def fetchOrderDetails(item_id, fields2exclude = ['coming', 'sale', 'id','order',
 def findBySelectionPublic(request):
     items = Item.objects.all()
     # only show items for sale
-    itemChoices = Item.objects.filter(forSale=True).order_by('-year') 
+    itemChoices = Item.objects.filter(forSale=True).order_by('item').order_by('-year') 
     
     # create initial context
     defaultImageUrl = 'https://drive.google.com/uc?id=1WZFyFdPikqZtkAI1KtvgmMJzJBzNHT8U'
@@ -162,7 +162,7 @@ def findbyname(request):
 def findBySelection(request):
     items = Item.objects.all()
     # show all items
-    itemChoices = Item.objects.all().order_by('-year') 
+    itemChoices = Item.objects.all().order_by('item').order_by('-year')
     
     # create initial context
     defaultImageUrl = 'https://drive.google.com/uc?id=1WZFyFdPikqZtkAI1KtvgmMJzJBzNHT8U'
