@@ -54,7 +54,7 @@
 
                   {% else %}
                   <a href="{% url 'login'%}?next={{request.path}}">Login</a>
-                  <a href="{% url 'admin:index' %}?next=inv_check">Admin site</a>
+                  <a href="{% url 'admin:index' %}">Admin site</a>
                   {% endif %} 
     </div>
     </div>
