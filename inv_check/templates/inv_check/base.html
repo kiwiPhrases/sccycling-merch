@@ -44,7 +44,8 @@
                           <a href="{% url 'item-selection' %}">Select an item</a>  
                           <a href="{% url 'show-orders' %}">Show orders</a>
                           <a href="{% url 'record-sale' %}">Record a sale</a>
-                          <a href="{% url 'new-item' %}">Add new item</a>                 
+                          <a href="{% url 'new-item' %}">Add new item</a>
+                          <a href="{% url 'admin:index' %}">Admin site</a>                          
                           <a href="{% url 'logout'%}?next={{request.path}}">Logout</a> 
                   
                         {% else  %}
