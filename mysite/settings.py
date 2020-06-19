@@ -29,6 +29,10 @@ DEBUG = True
 ## deployment line:
 ALLOWED_HOSTS = ['127.0.0.1', 'sccycling-merch.herokuapp.com']
 
+# log users out when browser is closed or after 30 minutes of inactivity
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True     
+SESSION_COOKIE_AGE = 60*30                   
+SESSION_SAVE_EVERY_REQUEST = True          
 
 # Application definition
 
