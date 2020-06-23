@@ -150,3 +150,10 @@ STATIC_URL = '/static/'
 
 ## authentication settings
 LOGIN_REDIRECT_URL = '/'
+
+## credentials to send emails:
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'info@usccycling.com'
+EMAIL_HOST_PASSWORD = 'NewTroj@nCycling'

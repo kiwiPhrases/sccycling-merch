@@ -7,6 +7,7 @@ from inv_check.models import Item, Coming, Sale, Order, FrontPics
 from django.db.models import Max
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
 
 from .forms import NameForm,ItemSaleForm, addItemForm, orderForm, itemFilterForm #, ItemSelectForm 
 
@@ -105,6 +106,17 @@ def findBySelectionPublic(request):
             return render(request, 'inv_check/itemchoicesshow.html', context)      
 
     return render(request, 'inv_check/itemchoicesshow.html', context) 
+
+def sendOrderEmail(datdict):
+    subjectline = 'New USC Merch Order'
+    fromemail = 'info@usccycling.com'
+    toemail = 'info@usccycling.com'
+    messageContent = ",\n".join(["%s: %s" %(key,str(datdict[key])) for key in datdict.keys()])
+    send_mail(subjectline,
+        messageContent,
+        fromemail,
+        [toemail,datdict['Email']],
+    fail_silently=False)
     
 def makeOrder(request):
     context = {'form':orderForm(),'fields':{'headers':[], 'rows':[]}} 
@@ -119,7 +131,10 @@ def makeOrder(request):
             fields = {
                 'headers': list(keys),
                 'rows':[datDict[key] for key in keys]}
-            context['fields'] = fields       
+            context['fields'] = fields   
+            
+            # send notification of new order
+            sendOrderEmail(datDict)
             return render(request, 'inv_check/makeorder.html', context)
 
     return render(request, 'inv_check/makeorder.html', context)    
