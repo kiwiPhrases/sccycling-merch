@@ -46,11 +46,11 @@
                           <a href="{% url 'record-sale' %}">Record a sale</a>
                           <a href="{% url 'new-item' %}">Add new item</a>
                           <a href="{% url 'admin:index' %}">Admin site</a>                          
-                          <a href="{% url 'logout'%}?next={{request.path}}">Logout</a> 
+                          <a href="{% url 'logout'%}?next={% url 'index' %}">Logout</a> 
                   
                         {% else  %}
                           <a href="{% url 'item-selection' %}">Select an item</a> 
-                          <a href="{% url 'logout'%}?next={{request.path}}">Logout</a>
+                          <a href="{% url 'logout'%}?next={% url 'index' %}">Logout</a>
                         {% endif %}
 
                   {% else %}
