@@ -4,9 +4,10 @@
 
 {% block content %}
     <h2>Make an order</h2>
-    <p>Prior to making an order, please check that the size for the item you are ordering is available <a href="{% url 'item-select-public' %}">here</a>.</p>
+    <p>Prior to making an order, please <b>check</b> that the <b>size</b> for the item you are ordering is available <a href="{% url 'item-select-public' %}">here</a> A confirmation e-mail will be sent to you with your order details.</p>
     
     <p>For questions regarding items, please contact us via our <a href="sccycling@gmail.com">email</a>. Orders are subject to review and we will contact you for details to complete the order. Thank you for supporting the club and Fight on!</p>
+    
         <table>
         <form method="post" action=".">
             {% csrf_token %}
@@ -14,8 +15,9 @@
             <input type="submit" value="Submit" />
         </form>
         </table>
-        
-    <h2> Order Details </h2>
+
+    <p><center><b> {{ confirmation.0 }} </b></center></p>
+    <h2> {{ confirmation.1 }} </h2>
     <table width="80%" border="1" class='data.frame'>
         <thead>
         <tr style="text-align: right;">

@@ -119,7 +119,7 @@ def sendOrderEmail(datdict):
     fail_silently=False)
     
 def makeOrder(request):
-    context = {'form':orderForm(),'fields':{'headers':[], 'rows':[]}} 
+    context = {'form':orderForm(),'fields':{'headers':[], 'rows':[],'confirmation':[]}} 
     if request.method == 'POST':
         form = orderForm(request.POST)
         if form.is_valid():
@@ -132,7 +132,7 @@ def makeOrder(request):
                 'headers': list(keys),
                 'rows':[datDict[key] for key in keys]}
             context['fields'] = fields   
-            
+            context['confirmation'] = ['Thank you for your order, confirmation e-mail has been sent', 'Your order details']
             # send notification of new order
             sendOrderEmail(datDict)
             return render(request, 'inv_check/makeorder.html', context)

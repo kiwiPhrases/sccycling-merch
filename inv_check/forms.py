@@ -18,7 +18,7 @@ class addItemForm(forms.ModelForm):
         
 class orderForm(forms.ModelForm):
     def __init__(self,*args,**kwargs):
-        super (orderForm,self ).__init__(*args,**kwargs)
+        super(orderForm,self ).__init__(*args,**kwargs)
         self.fields['item'].queryset = Item.objects.filter(forSale=True)
         
     class Meta:

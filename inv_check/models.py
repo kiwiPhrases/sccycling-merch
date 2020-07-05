@@ -21,6 +21,7 @@ class Item(models.Model):
     xxl = models.IntegerField(default=0)
     xxxl = models.IntegerField(default=0)
     count = models.IntegerField("If no sizes, enter count",default=0)
+    
     class Gender(models.TextChoices):
         Male = 'M'
         Womens = 'W'
@@ -48,7 +49,7 @@ class Item(models.Model):
         
     def __iter__(self):
         for field in self._meta.get_fields():
-            yield (field.name, field.value_from_object(self))
+            yield (field.item, field.value_from_object(self))
         
 class Coming(models.Model):
     #itemID = models.ForeignKey(itemID)
