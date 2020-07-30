@@ -10,20 +10,32 @@
             <!--<h3> Select item: </h3>-->
          <div style="width: 100%; display: table;">   
             <div style="display: table-row">
-                <div style="width: 20%; display: table-cell;"> 
-                    <p><b>Filter by type:</b></p>
+                <div style="width: 30%; display: table-cell;"> 
+                    <p><b>Filters</b></p>
+                    
                     <form id="subset-item" role="search" method="get" action="">
-                         <select name="item-type" data-placeholder="Filter items" class="chosen-select" >
+                        <a>Category</a>
+                         <select name="item-type" data-placeholder="Filter items" class="chosen-select" onChange="form.submit();" >
                             {% for itemtype in itemtypes %}
                                 <option value="{{ itemtype }}"> {{ itemtype }} </option>
                             {% endfor %}
                         </select><br/>
-                        <label for="submit"></label><button id="submit" type="submit" class="btn btn-default">Submit</button>               
+                        <!--<label for="submit"></label><button id="submit" type="submit" class="btn btn-default">Submit</button>      -->         
+                    </form>
+                    <form id="subset-item" role="search" method="get" action="">
+                        <a>Gender</a>
+                         <select name="item-gender" data-placeholder="Filter gender" class="chosen-select" onChange="form.submit();">
+                            {% for gender in itemgenders %}
+                                <option value="{{ gender }}"> {{ gender }} </option>
+                            {% endfor %}
+                        </select><br/>
+                        <!--<label for="submit"></label><button id="submit" type="submit" class="btn btn-default">Submit</button>  -->             
                     </form>
                 </div>
+             
             
             <div style="display: table-cell;">
-                <p><b>Available items:</b></p>
+                <p><b>Available items</b></p>
                 <form id="select-item" role="search" method="get" action="">
                     
                     <select name="item-choice" data-placeholder="Select item" class="chosen-select" >

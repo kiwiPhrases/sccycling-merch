@@ -84,17 +84,23 @@ def productViewOrder(request):
     
     # get item types from for-sale items
     itemTypes = list(dict.fromkeys([i.itemcategory for i in itemChoices]))
+    itemGenders = list(dict.fromkeys([i.gender for i in itemChoices]))
     
     # create initial context
     defaultImageUrl = 'https://drive.google.com/uc?id=1WZFyFdPikqZtkAI1KtvgmMJzJBzNHT8U'
-    context = {'items':itemChoices,'itemtypes':itemTypes, 'fields':{'headers':[], 'rows':[]}, 'img_url':defaultImageUrl}
+    context = {'items':itemChoices,'itemtypes':itemTypes,'itemgenders':itemGenders, 'fields':{'headers':[], 'rows':[]}, 'img_url':defaultImageUrl}
     #'form':itemFilterForm()
 
     if request.method == 'GET':
-        # process GET for item subset
+        # process GET for filter
         itemType = request.GET.get('item-type')
+        itemGender = request.GET.get('item-gender')
         if itemType:
             itemChoices = Item.objects.filter(itemcategory__icontains=itemType).filter(forSale=True).order_by('item').order_by('-year')
+            context['items'] = itemChoices
+            
+        if itemGender:
+            itemChoices = Item.objects.filter(gender__icontains=itemGender).filter(forSale=True).order_by('item').order_by('-year')
             context['items'] = itemChoices
 
         # process GET for actual item info request
