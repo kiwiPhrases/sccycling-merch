@@ -33,6 +33,9 @@ class Item(models.Model):
     itemtype = models.CharField(max_length=13, choices = itemTypes) 
     imgurl_1 = models.URLField('Image of item',default = 'https://drive.google.com/uc?id=1WZFyFdPikqZtkAI1KtvgmMJzJBzNHT8U')
 
+    itemCategory = [(s,s) for s in ['jersey','bibs','accessories','bike & parts']]
+    itemcategory = models.CharField(max_length=13, choices = itemCategory, default='accessories') 
+    
     def current_year():
         return datetime.date.today().year
         

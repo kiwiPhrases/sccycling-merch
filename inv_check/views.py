@@ -83,7 +83,7 @@ def productViewOrder(request):
     #itemTypes = [i[0] for i in Item._meta.get_field('itemtype').choices] # this gets all item types
     
     # get item types from for-sale items
-    itemTypes = list(dict.fromkeys([i.itemtype for i in itemChoices]))
+    itemTypes = list(dict.fromkeys([i.itemcategory for i in itemChoices]))
     
     # create initial context
     defaultImageUrl = 'https://drive.google.com/uc?id=1WZFyFdPikqZtkAI1KtvgmMJzJBzNHT8U'
@@ -94,7 +94,7 @@ def productViewOrder(request):
         # process GET for item subset
         itemType = request.GET.get('item-type')
         if itemType:
-            itemChoices = Item.objects.filter(itemtype__icontains=itemType).filter(forSale=True).order_by('item').order_by('-year')
+            itemChoices = Item.objects.filter(itemcategory__icontains=itemType).filter(forSale=True).order_by('item').order_by('-year')
             context['items'] = itemChoices
 
         # process GET for actual item info request
