@@ -4,7 +4,7 @@ from django.views.generic import ListView, CreateView, UpdateView
 from django.template import loader 
 from django.shortcuts import render, redirect
 from inv_check.models import Item, Coming, Sale, Order, FrontPics
-from django.db.models import Max
+from django.db.models import Max, Q
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
@@ -73,6 +73,52 @@ def fetchOrderDetails(item_id, fields2exclude = ['coming', 'sale', 'id','order',
     return(datDict)    
 
 ### -------------------------- PUBLIC FUNCTIONS --------------------------     
+def productViewOrder(request):
+    #items = Item.objects.all()
+    # only show items for sale
+    itemChoices = Item.objects.filter(forSale=True).order_by('item').order_by('-year') 
+
+
+    # get item types
+    #itemTypes = [i[0] for i in Item._meta.get_field('itemtype').choices] # this gets all item types
+    
+    # get item types from for-sale items
+    itemTypes = list(dict.fromkeys([i.itemtype for i in itemChoices]))
+    
+    # create initial context
+    defaultImageUrl = 'https://drive.google.com/uc?id=1WZFyFdPikqZtkAI1KtvgmMJzJBzNHT8U'
+    context = {'items':itemChoices,'itemtypes':itemTypes, 'fields':{'headers':[], 'rows':[]}, 'img_url':defaultImageUrl}
+    #'form':itemFilterForm()
+
+    if request.method == 'GET':
+        # process GET for item subset
+        itemType = request.GET.get('item-type')
+        if itemType:
+            itemChoices = Item.objects.filter(itemtype__icontains=itemType).filter(forSale=True).order_by('item').order_by('-year')
+            context['items'] = itemChoices
+
+        # process GET for actual item info request
+        itemName = request.GET.get('item-choice')
+        #print(itemName)
+        if itemName:
+            # fetch the item from the database
+            itemsFound = Item.objects.filter(item__icontains=itemName)
+            itemID = itemsFound[0].id
+            datDict = fetchItemDetails(itemID,['coming', 'sale','order','id','forSale','team_price','imgurl_1'])
+            keys = datDict.keys()      
+            # unpack them into another dictionary for printing table
+            fields = {
+                'headers': list(keys),
+                'rows':[datDict[key] for key in keys]}
+                
+            # update output dictionary values based on query results    
+            context['fields'] = fields
+            context['img_url'] = itemsFound[0].imgurl_1
+            print(context['img_url'])
+            return render(request, 'inv_check/itemchoicesshowANDorder.html', context)      
+
+    return render(request, 'inv_check/itemchoicesshowANDorder.html', context)   
+    
 def findBySelectionPublic(request):
     items = Item.objects.all()
     # only show items for sale
@@ -81,7 +127,6 @@ def findBySelectionPublic(request):
     # create initial context
     defaultImageUrl = 'https://drive.google.com/uc?id=1WZFyFdPikqZtkAI1KtvgmMJzJBzNHT8U'
     context = {'itemChoices':itemChoices, 'fields':{'headers':[], 'rows':[]}, 'img_url':defaultImageUrl}
-    #'form':itemFilterForm(),
                     
     # show request on the website
     if request.method == 'GET':
