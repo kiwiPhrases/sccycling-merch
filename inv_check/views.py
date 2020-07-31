@@ -88,9 +88,9 @@ def productViewOrder(request):
     
     # create initial context
     defaultImageUrl = 'https://drive.google.com/uc?id=1WZFyFdPikqZtkAI1KtvgmMJzJBzNHT8U'
-    context = {'items':itemChoices,'itemtypes':itemTypes,'itemgenders':itemGenders, 'fields':{'headers':[], 'rows':[]}, 'img_url':defaultImageUrl}
-    #'form':itemFilterForm()
-
+    context = {'items':itemChoices,'itemtypes':itemTypes,'itemgenders':itemGenders, 'fields':[], 'img_url':defaultImageUrl}
+    #'fields':{'headers':[], 'rows':[]}
+    
     if request.method == 'GET':
         # process GET for filter
         itemType = request.GET.get('item-type')
@@ -110,12 +110,15 @@ def productViewOrder(request):
             # fetch the item from the database
             itemsFound = Item.objects.filter(item__icontains=itemName)
             itemID = itemsFound[0].id
-            datDict = fetchItemDetails(itemID,['coming', 'sale','order','id','forSale','team_price','imgurl_1'])
+            datDict = fetchItemDetails(itemID,['coming', 'sale','order','id','forSale','team_price','imgurl_1','itemcategory','itemtype'])
             keys = datDict.keys()      
             # unpack them into another dictionary for printing table
-            fields = {
-                'headers': list(keys),
-                'rows':[datDict[key] for key in keys]}
+            #fields = {
+            #    'headers': list(keys),
+            #    'rows':[datDict[key] for key in keys]}
+            fields = []
+            for key in datDict:
+                fields.append((key,datDict[key]))
                 
             # update output dictionary values based on query results    
             context['fields'] = fields
@@ -124,6 +127,9 @@ def productViewOrder(request):
             return render(request, 'inv_check/itemchoicesshowANDorder.html', context)      
 
     return render(request, 'inv_check/itemchoicesshowANDorder.html', context)   
+    
+
+    
     
 def findBySelectionPublic(request):
     items = Item.objects.all()

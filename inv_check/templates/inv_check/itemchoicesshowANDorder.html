@@ -51,24 +51,23 @@
     </div>
     
     
-    <figure  class="half" style="display:flex">
-        <img src="{{ img_url }}" alt="merch image"  style="width:50%"></img>
-    </figure>    
-    <table width="80%" border="1" class='data.frame'>
-        <thead>
-        <tr style="text-align: right;">
-        {% for header in fields.headers %}
-            <th><center>{{ header }}</center></th>
-        {% endfor %}
-        </thead>
-        <tbody>
-        <tr> 
-        {% for value in fields.rows %}
-                <td>{{ value }}</td>
-        {% endfor %}
-        </tr> 
-        </tbody>
-    </table>
+    <div style="margin-top: 20px">
+        <img src="{{ img_url }}" alt="merch image"  style="width:40%;float:left;margin-left:10px"></img>
+        
+        <table border="0" style="float:left;width:200px;margin-right:10px" class='data.frame'> 
+                {% for field in fields %}
+                    <thead>
+                           <th><center>{{ field.0 }}</center></th>  
+                    </thead>
+                    <tbody>
+                        <tr style="text-align: left;">
+                            <td>{{ field.1 }}</td>
+                        </tr>
+                    </tbody>
+                {% endfor %}
+            </table>
+            
+    </div>
 
 </div>
 
