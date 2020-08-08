@@ -3,7 +3,7 @@
 {% block content %}
 
 <div class="container">
-    <div class="row">
+    <div>
             <h2>Merch Details</h2>
             <p>To see available sizes, prices, and pictures, select an item below:</p>
                       
@@ -52,9 +52,14 @@
     
     
     <div style="margin-top: 20px">
-        <img src="{{ img_url }}" alt="merch image"  style="width:40%;float:left;margin-left:10px"></img>
+        {% if addedtocart %}
+            <p>Item added to cart</p>
+        {% endif %}
         
-        <table border="0" style="float:left;width:200px;margin-right:10px" class='data.frame'> 
+        <img src="{{ img_url }}" alt="merch image"  style="width:70%;float:left;margin-right:5px"></img>
+        
+        <div style="float:left;width:200px">
+        <table border="0" style="margin-left:5px" class='data.frame'> 
                 {% for field in fields %}
                     <thead>
                            <th><center>{{ field.0 }}</center></th>  
@@ -65,11 +70,21 @@
                         </tr>
                     </tbody>
                 {% endfor %}
-            </table>
-            
+         </table>
+       {% if fields %}
+       <table style+"width:200px"> 
+        <caption style="margin-top:10px;width:200px"><b>Add to cart</b></caption>
+        <form method="post" >
+            {% csrf_token %}
+            {{ form.errors }}
+            {{ form.non_field_errors }}
+            {{ form.as_table }}
+            <td><input type="submit" value="Add to cart"/></td>
+        </form>
+        </table>
+        {% endif %}
+        </div>
     </div>
-
 </div>
-
 
 {% endblock %}

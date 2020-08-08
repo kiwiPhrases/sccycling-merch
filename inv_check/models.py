@@ -96,11 +96,12 @@ class Sale(models.Model):
     #    for field in self._meta.get_fields():
     #        yield (field.name, field.value_from_object(self))
 
+
 class Order(models.Model):
     # item description
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     itemSizes = [(s,s.upper()) for s in  ['xxs','xs','s','m','l','xl','xxl','xxxl','count']]
-    size = models.CharField("Sold item size (if no size, select count) ", max_length = 5, choices = itemSizes)
+    size = models.CharField("Item size", max_length = 5, choices = itemSizes)
     quantity = models.IntegerField(default=1)
     
     class Recipient(models.TextChoices):

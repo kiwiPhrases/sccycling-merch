@@ -8,8 +8,9 @@ from django.db.models import Max, Q
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
+import json
 
-from .forms import NameForm,ItemSaleForm, addItemForm, orderForm, itemFilterForm #, ItemSelectForm 
+from .forms import NameForm,ItemSaleForm, addItemForm, orderForm, itemOrderForm,orderContactForm #, ItemSelectForm 
 
 ## -------------------------- home-page functions --------------------------     
 def index(request):
@@ -74,27 +75,28 @@ def fetchOrderDetails(item_id, fields2exclude = ['coming', 'sale', 'id','order',
 
 ### -------------------------- PUBLIC FUNCTIONS --------------------------     
 def productViewOrder(request):
-    #items = Item.objects.all()
     # only show items for sale
     itemChoices = Item.objects.filter(forSale=True).order_by('item').order_by('-year') 
-
 
     # get item types
     #itemTypes = [i[0] for i in Item._meta.get_field('itemtype').choices] # this gets all item types
     
     # get item types from for-sale items
     itemTypes = list(dict.fromkeys([i.itemcategory for i in itemChoices]))
+    itemTypes.insert(0, "select")
     itemGenders = list(dict.fromkeys([i.gender for i in itemChoices]))
+    itemGenders.insert(0,'select')
     
     # create initial context
     defaultImageUrl = 'https://drive.google.com/uc?id=1WZFyFdPikqZtkAI1KtvgmMJzJBzNHT8U'
     context = {'items':itemChoices,'itemtypes':itemTypes,'itemgenders':itemGenders, 'fields':[], 'img_url':defaultImageUrl}
-    #'fields':{'headers':[], 'rows':[]}
-    
+            
     if request.method == 'GET':
         # process GET for filter
         itemType = request.GET.get('item-type')
         itemGender = request.GET.get('item-gender')
+        
+        # filter item menu by type or gender
         if itemType:
             itemChoices = Item.objects.filter(itemcategory__icontains=itemType).filter(forSale=True).order_by('item').order_by('-year')
             context['items'] = itemChoices
@@ -105,7 +107,9 @@ def productViewOrder(request):
 
         # process GET for actual item info request
         itemName = request.GET.get('item-choice')
-        #print(itemName)
+
+        # if an item was selected, load its info and picture.'
+        # also, show order form
         if itemName:
             # fetch the item from the database
             itemsFound = Item.objects.filter(item__icontains=itemName)
@@ -123,13 +127,172 @@ def productViewOrder(request):
             # update output dictionary values based on query results    
             context['fields'] = fields
             context['img_url'] = itemsFound[0].imgurl_1
-            print(context['img_url'])
-            return render(request, 'inv_check/itemchoicesshowANDorder.html', context)      
+            
+            # get available sizes
+            countFields = [ 'xxs','xs','s','m','l','xl','xxl','xxxl','count']
+            sizes = [key for key in datDict.keys() if key.lower() in countFields]
+            sizeChoices = [(s.lower(),s.upper()) for s in sizes]
+            
+            # get max quant that can be ordered
+            max_quant = 0
+            for s in sizes:
+                if datDict[s]>max_quant:
+                    max_quant = datDict[s]
 
+            # update form with sizes, item, and quantity max
+            context['form'] = itemOrderForm(size_choices = sizeChoices,max_quant = max_quant, item=itemsFound[0].item) #initial = {'item':itemsFound[0],'recipient':'RETAIL'},, item=itemsFound[0]
+            
+            #save item to session
+            request.session['orderItem'] = itemsFound[0].id 
+            
+            return render(request, 'inv_check/itemchoicesshowANDorder.html', context) 
+    
+    #process submitted form
+    if request.method == 'POST':
+        form = itemOrderForm(request.POST)
+        
+        if form.is_valid():
+            datDict = {}
+            # fetch data from session
+            item = Item.objects.get(pk = request.session.get('orderItem'))
+            print(item)
+            # fetch data from database
+            datDict['price'] = int(item.retail_price)
+            #datDict['item'] = item.item
+            datDict['item'] = form.cleaned_data['item']
+            #datDict['img_url'] = item.imgurl_1
+            
+            # fetch data from the form
+            datDict['size'] = form.cleaned_data['size'].upper()
+            datDict['quantity'] = int(form.cleaned_data['quantity'])
+            
+            fields = {}
+            fields['rows'] = []
+            fields['headers'] = ['item','size','quantity','price']
+            fields['rows'].append([datDict[key] for key in fields['headers']])
+            
+            # add items to order
+            if request.session.get('order'):
+                #sessionOrderNum = len(json.loads(request.session.get('order')))
+                print("Adding items to order")
+
+                tmpList = json.loads(request.session['order'])
+                tmpList.append(fields)
+                request.session['order'] = json.dumps(tmpList)
+                print(request.session['order'])
+            
+            else:
+                print("First order addition")
+                request.session['order'] = json.dumps([fields])
+                   
+            print(json.loads(request.session.get('order')))
+            #context = {'fields':json.loads(request.session.get('order'))} #:fields
+
+            return redirect('order-cart')      
+        else:
+            print("Form didn't validate")
+            print(request.session.get('orderItem'))
+            print(form)
+            print(form.errors)
+            
+    context['form'] = itemOrderForm()#orderForm_part1()
     return render(request, 'inv_check/itemchoicesshowANDorder.html', context)   
-    
 
+def orderCart(request):
+    # grab order info and print to table
+    fields = {}
+    context = {'fields':{'headers':[],'rows':[]}}
+    if request.session.get('order'):
+        basket = json.loads(request.session.get('order'))
+        fields['headers'] = basket[0]['headers']
+        fields['rows'] = []
+        for i in basket:
+            fields['rows'].append(*i['rows'])
+        print(fields)
+        context = {'fields':fields}
+
+    # get contact info
+    context['contactform'] = orderContactForm()
+    if request.method=='POST':
+        # if form is valid, create a complete Order form for each entry in the basket
+        form = orderContactForm(request.POST)
+        if form.is_valid():
+            headers = basket[0]['headers']
+            # loop over the basket
+            for i in basket:
+                orderDict = {}
+                # process item details
+                for col,val in zip(headers,*i['rows']):
+                    if col == 'item':
+                        itemInst = Item.objects.filter(item__icontains = val)[0]
+                        orderDict['item'] = itemInst#[0]
+                    if col == 'price':
+                        pass
+                    if col == 'size':
+                        orderDict[col] = val.lower()
+                    if col not in ['item', 'price', 'size']:
+                        orderDict[col.lower()] = val
+                # add contact from contact form
+                for col in ('name','email','phone','address1','address2','city','state','zip'):
+                    orderDict[col] = form.cleaned_data[col]
+                print(orderDict)
+                # save the orders
+                order = Order(**orderDict)
+                try:
+                    order.full_clean()
+                    print(" -------- Order would be saved! --------------")
+                    #order.save()
+                except ValidationError as e:
+                    print(e)
+                    raise Http404(print(e) + " \nIf you get this, email burinski@usc.edu with the above message. Thank you! ")
+            # if order is good,    
+            # clear up the basket:
+            request.session.pop('order')
+            sendOrderEmail_cart(basket,orderDict['email'])
+            
+            # send to confirmation page
+            return redirect('order-confirm')
+    return render(request, 'inv_check/ordercart.html', context)
+ 
+def readbasket(basket):
+    headers = basket[0]['headers']
+    lines = []
+    for i in basket:
+        linedict = {}
+        for col,val in zip(headers,*i['rows']):
+            #print(col,val)
+            linedict[col] = str(val)
+        lines.append(", ".join(["%s: %s" %(key,str(linedict[key])) for key in linedict.keys()]))
+    messageContent = "\n".join(lines)
+    return(messageContent)
     
+def sendOrderEmail_cart(basket, recipientemail):
+    subjectline = 'New USC Merch Order'
+    fromemail = 'info@usccycling.com'
+    toemail = 'info@usccycling.com'
+    preable = "Your order confirmation USC Cycling Club:\n\n"
+    messageContent = readbasket(basket)
+    postable = "\n\nThank you and fight on!"
+    send_mail(subjectline,
+        preable+messageContent+postable,
+        fromemail,
+        [toemail,recipientemail],
+    fail_silently=False)   
+
+def sendOrderEmail(datdict):
+    subjectline = 'New USC Merch Order'
+    fromemail = 'info@usccycling.com'
+    toemail = 'info@usccycling.com'
+    messageContent = ",\n".join(["%s: %s" %(key,str(datdict[key])) for key in datdict.keys()])
+    send_mail(subjectline,
+        messageContent,
+        fromemail,
+        [toemail,datdict['Email']],
+    fail_silently=False)    
+    
+def orderConfirm(request):
+   #context = {}
+   return render(request, 'inv_check/orderconfirmation.html')
     
 def findBySelectionPublic(request):
     items = Item.objects.all()
@@ -159,11 +322,11 @@ def findBySelectionPublic(request):
             # update output dictionary values based on query results    
             context['fields'] = fields
             context['img_url'] = itemsFound[0].imgurl_1
-            print(context['img_url'])
             return render(request, 'inv_check/itemchoicesshow.html', context)      
 
     return render(request, 'inv_check/itemchoicesshow.html', context) 
 
+#### ------------ sendOrderEmail is an obsolete function (Delete later) -------------- 
 def sendOrderEmail(datdict):
     subjectline = 'New USC Merch Order'
     fromemail = 'info@usccycling.com'
@@ -174,7 +337,7 @@ def sendOrderEmail(datdict):
         fromemail,
         [toemail,datdict['Email']],
     fail_silently=False)
-    
+#### --------------  makeOrder is an obsolete function (Delete later) --------------     
 def makeOrder(request):
     context = {'form':orderForm(),'fields':{'headers':[], 'rows':[],'confirmation':[]}} 
     if request.method == 'POST':
@@ -195,9 +358,9 @@ def makeOrder(request):
             return render(request, 'inv_check/makeorder.html', context)
 
     return render(request, 'inv_check/makeorder.html', context)    
-    
-    
+
 ### -------------------------- EBOARD FUNCTIONS: -------------------------- 
+####  -------------- findbyname is an obsolete function (Delete later) -------------- 
 @login_required
 def findbyname(request):
     defaultImageUrl = 'https://drive.google.com/uc?id=1WZFyFdPikqZtkAI1KtvgmMJzJBzNHT8U'
@@ -228,6 +391,7 @@ def findbyname(request):
                 context['fields']['rows'] = ["Can't find item. Being more specific may help"]
 
     return render(request, 'inv_check/detailshow.html', context)      
+
 
 ## Select item functions 
 @login_required
@@ -261,7 +425,6 @@ def findBySelection(request):
     return render(request, 'inv_check/itemchoicesshow.html', context)   
 
 
-    
 @login_required    
 def recordSale(request):
    context = {'form':ItemSaleForm(),'fields':{'headers':[], 'rows':[]}}

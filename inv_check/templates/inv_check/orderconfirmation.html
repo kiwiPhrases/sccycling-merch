@@ -1,0 +1,17 @@
+{% extends 'inv_check/base.html' %}
+
+{% block content %}
+<div class="container">
+    
+    <h2>Order Confirmation</h2>
+    <div style="width:50%">
+
+    <p>Your order has been submitted. A confirmation e-mail has been sent to you.</p>
+    
+    <p>Orders are subject to review and we will contact you for shipping and payment details to complete the order.</p>  
+
+    <p> Thank you for supporting the club and Fight on!</p>
+    
+    <p> <a href="{% url 'index' %}">Click here</a> to go back to the main page </p>
+    </div>
+{% endblock %}

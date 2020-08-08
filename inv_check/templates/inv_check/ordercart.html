@@ -1,0 +1,46 @@
+{% extends 'inv_check/base.html' %}
+
+{% block content %}
+<div class="container">
+    
+    <h2>Order Cart</h2>
+    <div style="width:50%">
+
+    <p>For questions regarding items, please contact us via our <a href="sccycling@gmail.com">email</a>. Orders are subject to review and we will contact you for details to complete the order.</p>    
+    </div>
+    
+    <h3>Items in cart</h3>
+    <p>Click <a href="{% url 'item-select-public' %}">here</a> to return to previous menu and add more items <b>before</b> filling out the recipient details</p>
+    <table width="50%" border="1">
+        <thead>
+        <tr style="text-align: right;">
+        {% for header in fields.headers %}
+            <th><center>{{ header }}</center></th>
+        {% endfor %}
+        </thead>
+        <tbody>
+        {% for valueList in fields.rows %}
+            <tr>    
+            {% for value in valueList %}
+                <td>{{ value }}</td>
+            {% endfor %}
+            </tr>    
+        {% endfor %}
+        </tbody>
+    </table>
+    
+    <div style="width:50%">
+    <h3>Recipient Details</h3>
+    <p>A member of the team will contact you about payment and shipping options once you fill out and submit the form below.</p>
+    </div>
+    
+    <table > 
+        <caption style="margin-top:10px"><b>Recipient Details</b></caption>
+        <form method="post"  >
+            {% csrf_token %}
+            {{ contactform}}
+            <td><input type="submit" value="Submit order"/></td>
+        </form>
+    </table>
+</div>
+{% endblock %}
