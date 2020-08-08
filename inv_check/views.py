@@ -210,6 +210,12 @@ def orderCart(request):
             fields['rows'].append(*i['rows'])
         print(fields)
         context = {'fields':fields}
+        
+    # clear cart on clear button click:
+    if request.method=='GET':
+        if request.session.get('order'):
+            request.session.pop('order')
+        return render(request, 'inv_check/ordercart.html', context)
 
     # get contact info
     context['contactform'] = orderContactForm()
