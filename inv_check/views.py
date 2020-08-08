@@ -240,8 +240,8 @@ def orderCart(request):
                 order = Order(**orderDict)
                 try:
                     order.full_clean()
-                    print(" -------- Order would be saved! --------------")
-                    #order.save()
+                    print(" -------- Order  saved! --------------")
+                    order.save()
                 except ValidationError as e:
                     print(e)
                     raise Http404(print(e) + " \nIf you get this, email burinski@usc.edu with the above message. Thank you! ")
