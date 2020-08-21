@@ -114,7 +114,14 @@ def productViewOrder(request):
             # fetch the item from the database
             itemsFound = Item.objects.filter(item__icontains=itemName)
             itemID = itemsFound[0].id
-            datDict = fetchItemDetails(itemID,['coming', 'sale','order','id','forSale','team_price','imgurl_1','itemcategory','itemtype'])
+            
+            # display team price if user is authenticated
+            if request.user.is_authenticated:
+                datDict = fetchItemDetails(itemID,['coming', 'sale','order','id','forSale','imgurl_1','itemcategory','itemtype'])
+            
+            # do not display team price if user is not authenticated
+            else:
+                datDict = fetchItemDetails(itemID,['coming', 'sale','order','id','forSale','team_price','imgurl_1','itemcategory','itemtype'])
             keys = datDict.keys()      
             # unpack them into another dictionary for printing table
             #fields = {
@@ -157,7 +164,13 @@ def productViewOrder(request):
             item = Item.objects.get(pk = request.session.get('orderItem'))
             print(item)
             # fetch data from database
-            datDict['price'] = int(item.retail_price)
+            
+            ## if user is authenticated, user team price
+            if request.user.is_authenticated:
+                datDict['price'] = int(item.team_price)
+            ## else use team price
+            else:
+                datDict['price'] = int(item.retail_price)
             #datDict['item'] = item.item
             datDict['item'] = form.cleaned_data['item']
             #datDict['img_url'] = item.imgurl_1
@@ -202,6 +215,9 @@ def orderCart(request):
     # grab order info and print to table
     fields = {}
     context = {'fields':{'headers':[],'rows':[]}}
+
+    
+    # populate order details with order info from session
     if request.session.get('order'):
         basket = json.loads(request.session.get('order'))
         fields['headers'] = basket[0]['headers']
@@ -213,12 +229,14 @@ def orderCart(request):
         
     # clear cart on clear button click:
     if request.method=='GET':
-        if request.session.get('order'):
+        print(request.GET.get('clear-cart'))
+        if request.GET.get('clear-cart'):
             request.session.pop('order')
-        return render(request, 'inv_check/ordercart.html', context)
-
-    # get contact info
-    context['contactform'] = orderContactForm()
+            context['fields'] = {'headers':[],'rows':[]}
+            print("basket has been cleared")
+            return render(request, 'inv_check/ordercart.html', context)
+        print("Get was passed but no action taken")
+        
     if request.method=='POST':
         # if form is valid, create a complete Order form for each entry in the basket
         form = orderContactForm(request.POST)
@@ -258,6 +276,9 @@ def orderCart(request):
             
             # send to confirmation page
             return redirect('order-confirm')
+            
+    # get contact info
+    context['contactform'] = orderContactForm()
     return render(request, 'inv_check/ordercart.html', context)
  
 def readbasket(basket):

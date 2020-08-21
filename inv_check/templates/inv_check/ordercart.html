@@ -30,10 +30,10 @@
     </table>
     
     <div style="width:50%">
-        <form id="clear-cart" method="get" action="">
-            <p><b>Clear cart: </b><button id="submit" type="submit" class="btn btn-default">Clear</button>    </p>
-               
-        </form>
+        <form method = 'get' name='clear-cart'>
+            <!--<p><b>Clear cart: </b><button value="clear" type="submit" class="btn btn-default" name='clear-cart'>Clear</button></p>-->
+            <input type="submit" value="Clear" name='clear-cart'/>
+         </form>
     </div>
     
     <div style="width:50%">
@@ -45,7 +45,7 @@
         <caption style="margin-top:10px"><b>Recipient Details</b></caption>
         <form method="post"  >
             {% csrf_token %}
-            {{ contactform}}
+            {{ contactform }}
             <td><input type="submit" value="Submit order"/></td>
         </form>
     </table>
