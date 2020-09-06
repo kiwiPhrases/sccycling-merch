@@ -515,6 +515,80 @@ def showInventory(request, item_id):
     
 
 @login_required(login_url='/accounts/login/')    
+def showOrders_ver2(request):
+    context = {'fields':{'headers':[], 'rows':[]}} #,'form':ItemSaleForm()} 
+    orders = Order.objects.filter(completed=False)
+    context['orders'] = orders
+
+    # print incompleted orders
+    if orders:
+        fields = [s.name for s in orders[0]._meta.get_fields()]
+        datDict = {}
+        datDict['headers'] =  fields
+        datDict['rows'] = []
+        for order in orders:
+            row = []
+            for field in fields:
+                row.append(getattr(order,field))
+            datDict['rows'].append(row)
+        for key in context['fields'].keys():        
+            context['fields'][key] = datDict[key]
+            
+    else:
+        context['fields']['headers'] = ['Orders']
+        context['fields']['rows']=[["Seems there are no outstanding orders"]]
+        
+    # mark selected order as completed
+    if request.method == 'GET':
+        orderID = request.GET.get("item-order")
+        if orderID:
+            print(orderID)
+            order2complete = Order.objects.get(id=orderID)
+            prefill = {}
+            for field in ('item','size','recipient', 'quantity'):
+               prefill[field] = getattr(order2complete, field)
+            
+            if prefill['recipient'] == 'RETAIL':
+                prefill['price'] = Item.objects.get(pk =  prefill['item'].id).retail_price
+            else:
+                prefill['price'] = Item.objects.get(pk =  prefill['item'].id).team_price
+                
+            prefill['ship'] = False
+            
+            context['form'] = ItemSaleForm(prefill)
+            
+            # mark order as completed
+            order2complete.completed=True
+            order2complete.save(update_fields = ['completed'])
+            
+    # fill fields in case order needs to be modified         
+    if request.method == 'POST':
+        form = ItemSaleForm(request.POST)
+         
+        if form.is_valid():
+            sale = form.save(commit=False)
+            # get corresponding item
+            item = Item.objects.get(item__iexact = sale.item.item)
+            itemID = item.id
+            if sale.size == 'count':
+                n = item.count #old quant
+                m = sale.quantity #new quant
+                item.count = n - m
+                item.save(update_fields = ['count'])
+            if sale.size != 'count':
+                n = getattr(item, sale.size) #old value
+                m = n-sale.quantity #new value
+                setattr(item,sale.size,m)
+                item.save(update_fields=[sale.size])
+                
+        context['fields2'] = {'headers':['item','old quantity', 'new quantity'],'rows':[sale.item.item,n,m]}
+        return render(request, 'inv_check/showOrders.html', context)    
+        
+    return render(request, 'inv_check/showOrders.html', context)  
+
+
+## -------------------------- showOrders is now obsolete, delete later ------------------- ##
+@login_required(login_url='/accounts/login/')    
 def showOrders(request):
     context = {'fields':{'headers':[], 'rows':[]}} 
     orders = Order.objects.filter(completed=False)
@@ -527,8 +601,8 @@ def showOrders(request):
             order2complete = Order.objects.get(id=orderID)
             order2complete.completed = True
             order2complete.save(update_fields=['completed'])
-    
-    # print uncompleted orders
+            
+    # print incompleted orders
     if orders:
         fields = [s.name for s in orders[0]._meta.get_fields()]
         datDict = {}

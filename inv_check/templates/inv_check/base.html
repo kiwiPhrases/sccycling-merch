@@ -20,6 +20,8 @@
 </head>
 <body>
 
+
+                          
 <div class="topnav" id="myTopnav">
     <!--<a id='navbarimg'><img src="{% static 'inv_check/images/SCcycling_logo.png' %}" alt='logo' ></a>-->
     <div class="dropdown">
@@ -40,17 +42,15 @@
                   {% if user.is_authenticated %}
                   <a> User: {{ user.get_username }} </a>
                         {% if user.is_staff %}
-                          <!--<a href="{% url 'item-search' %}">Search for item</a>-->
-                          <!--<a href="{% url 'item-selection' %}">Select an item</a> -->
+
                           <a href="{% url 'item-select-public' %}">Get merch</a>
                           <a href="{% url 'show-orders' %}">Show orders</a>
-                          <a href="{% url 'record-sale' %}">Record a sale</a>
                           <a href="{% url 'new-item' %}">Add new item</a>
                           <a href="{% url 'admin:index' %}">Admin site</a>                          
                           <a href="{% url 'logout'%}?next={% url 'index' %}">Logout</a> 
                   
                         {% else  %}
-                          <a href="{% url 'item-selection' %}">Select an item</a> 
+                          <a href="{% url 'item-select-public' %}">Get merch</a>
                           <a href="{% url 'logout'%}?next={% url 'index' %}">Logout</a>
                         {% endif %}
 

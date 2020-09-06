@@ -10,7 +10,7 @@
     <div class="row">
         <div class="col-md-8">
             <h3>Select order id:</h3>
-            <p>Selecting an order will mark it as complete</p>
+            <p>Careful: Selecting an order will mark order as complete and fill <b>Sale Form</b> below</p>
             <form id="select-order" method="get" action="">
                 <select name="item-order" class="chosen-select">
                     {% for order in orders %}
@@ -41,5 +41,37 @@
         {% endfor %}
         </tbody>
     </table>
+    </div>
+    
+    <div>
+        <h2>Sale Form</h2>
+        <p>Please modify any fields if necessary, click submit to record sale and update inventory</p>
+        <table>
+        <form method="post" action=".">
+            {% csrf_token %}
+            {{ form.as_table }}
+            
+            <input type="submit" value="Submit" />
+        </form>
+        </table>
+    </div>
+    
+    <div>
+        <h2> Updated item Details </h2>
+        <table width="80%" border="1" class='data.frame'>
+            <thead>
+            <tr style="text-align: right;">
+            {% for header in fields2.headers %}
+                <th><center>{{ header }}</center></th>
+            {% endfor %}
+            </thead>
+            <tbody>
+            <tr> 
+            {% for value in fields2.rows %}
+                    <td>{{ value }}</td>
+            {% endfor %}
+            </tr> 
+            </tbody>
+        </table>
     </div>
 {% endblock %}
