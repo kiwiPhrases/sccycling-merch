@@ -79,8 +79,3 @@ class orderContactForm(forms.ModelForm):
         fields = ('name','email','phone','address1','address2','city','state','zip')
 
     
-    
-    
-    
-
-    

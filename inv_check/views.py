@@ -257,8 +257,10 @@ def orderCart(request):
                     if col not in ['item', 'price', 'size']:
                         orderDict[col.lower()] = val
                 # add contact from contact form
+                contactMessage = 'Contact details\n'
                 for col in ('name','email','phone','address1','address2','city','state','zip'):
                     orderDict[col] = form.cleaned_data[col]
+                    contactMessage += "\t\n" + ": ".join([col,str(form.cleaned_data[col])])
                 print(orderDict)
                 # save the orders
                 order = Order(**orderDict)
@@ -272,7 +274,7 @@ def orderCart(request):
             # if order is good,    
             # clear up the basket:
             request.session.pop('order')
-            sendOrderEmail_cart(basket,orderDict['email'])
+            sendOrderEmail_cart(basket,contactMessage,orderDict['email'])
             
             # send to confirmation page
             return redirect('order-confirm')
@@ -293,7 +295,7 @@ def readbasket(basket):
     messageContent = "\n".join(lines)
     return(messageContent)
     
-def sendOrderEmail_cart(basket, recipientemail):
+def sendOrderEmail_cart(basket, contactDetails ,recipientemail):
     subjectline = 'New USC Merch Order'
     fromemail = 'info@usccycling.com'
     toemail = 'info@usccycling.com'
@@ -301,7 +303,7 @@ def sendOrderEmail_cart(basket, recipientemail):
     messageContent = readbasket(basket)
     postable = "\n\nThank you and fight on!"
     send_mail(subjectline,
-        preable+messageContent+postable,
+        "\n\n".join([preable,messageContent,contactDetails,postable]),
         fromemail,
         [toemail,recipientemail],
     fail_silently=False)   
