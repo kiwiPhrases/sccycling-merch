@@ -114,7 +114,7 @@ class Order(models.Model):
     # contact form
     name = models.CharField(max_length=50)
     address1 = models.CharField(max_length=50)
-    address2 = models.CharField(default = '',max_length=10)
+    address2 = models.CharField(default = '',max_length=10, null=True, blank=True)
     city = models.CharField(max_length=15)
     state = models.CharField(max_length=3)
     zip = models.IntegerField()

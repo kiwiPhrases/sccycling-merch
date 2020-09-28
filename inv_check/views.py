@@ -8,6 +8,7 @@ from django.db.models import Max, Q
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
+from django.core.exceptions import ValidationError
 import json
 
 from .forms import NameForm,ItemSaleForm, addItemForm, orderForm, itemOrderForm,orderContactForm #, ItemSelectForm 
@@ -240,6 +241,8 @@ def orderCart(request):
     if request.method=='POST':
         # if form is valid, create a complete Order form for each entry in the basket
         form = orderContactForm(request.POST)
+            
+        # process the form
         if form.is_valid():
             headers = basket[0]['headers']
             # loop over the basket
@@ -270,7 +273,7 @@ def orderCart(request):
                     order.save()
                 except ValidationError as e:
                     print(e)
-                    raise Http404(print(e) + " \nIf you get this, email burinski@usc.edu with the above message. Thank you! ")
+                    raise Http404(" \nIf you see this, email burinski@usc.edu with the above message. Thank you! ")
             # if order is good,    
             # clear up the basket:
             request.session.pop('order')
