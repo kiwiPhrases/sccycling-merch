@@ -1,10 +1,20 @@
 from django.db import models
+from django.db.models import F
 import re
 import datetime
 
 class FrontPics(models.Model):
     picLabel = models.CharField('alternative label', max_length=15, default = 'front merch pic')
     imgurl= models.URLField('image',default = 'https://drive.google.com/uc?id=1WZFyFdPikqZtkAI1KtvgmMJzJBzNHT8U')
+
+class AnnotationManager(models.Manager):
+
+    def __init__(self, **kwargs):
+        super().__init__()
+        self.annotations = kwargs
+
+    def get_queryset(self):
+        return super().get_queryset().annotate(**self.annotations)
 
 class Item(models.Model):
     #itemID = models.AutoField(primary_key = True)
@@ -54,6 +64,10 @@ class Item(models.Model):
         for field in self._meta.get_fields():
             yield (field.item, field.value_from_object(self))
         
+    objects = AnnotationManager(
+        numForsale = F('xxs') + F('xs') + F('s') + F('m') + F('l') + F('xl') + F('xxl') + F('xxxl') + F('count')
+    )
+    
 class Coming(models.Model):
     #itemID = models.ForeignKey(itemID)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)

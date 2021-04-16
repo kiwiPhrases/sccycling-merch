@@ -77,7 +77,7 @@ def fetchOrderDetails(item_id, fields2exclude = ['coming', 'sale', 'id','order',
 ### -------------------------- PUBLIC FUNCTIONS --------------------------     
 def productViewOrder(request):
     # only show items for sale
-    itemChoices = Item.objects.filter(forSale=True).order_by('item').order_by('-year') 
+    itemChoices = Item.objects.filter(forSale=True).filter(numForsale__gt=0).order_by('item').order_by('-year') 
 
     # get item types
     #itemTypes = [i[0] for i in Item._meta.get_field('itemtype').choices] # this gets all item types
